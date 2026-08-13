@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using System.Drawing;
 using System.Collections.Generic;
 using Robocode.TankRoyale.BotApi;
 using Robocode.TankRoyale.BotApi.Events;
+using Robocode.TankRoyale.BotApi.Graphics;
 
 // ------------------------------------------------------------------
 // woff 🐶
@@ -168,8 +168,8 @@ public class Woff : Bot
             Bullet bullet = bullets[i];
             bullet.X += bullet.Speed * Math.Cos(bullet.Direction);
             bullet.Y += bullet.Speed * Math.Sin(bullet.Direction);
-            Graphics.DrawEllipse(new Pen(Color.Black), (float)bullet.X, (float)bullet.Y, 
-                        (float)(3 * bullet.Power), (float)(3 * bullet.Power));
+            Graphics.SetStrokeColor(Color.Black);
+            Graphics.DrawCircle(bullet.X, bullet.Y, 1.5 * bullet.Power);
             // Console.WriteLine("BulletId: " + i + " X: " + bullet.X + " Y: " + bullet.Y);
 
             if (bullet.X < 0 - BULLET_OFFSET_ARENA || bullet.X > ArenaWidth + BULLET_OFFSET_ARENA || 
@@ -188,9 +188,8 @@ public class Woff : Bot
             Bullet bullet = myBullets[i].BulletData;
             bullet.X += bullet.Speed * Math.Cos(bullet.Direction);
             bullet.Y += bullet.Speed * Math.Sin(bullet.Direction);
-            Graphics.DrawEllipse(myBullets[i].Type == 0 ? new Pen(Color.Orange) : new Pen(Color.Red), 
-                        (float)bullet.X, (float)bullet.Y, 
-                        (float)(3 * bullet.Power), (float)(3 * bullet.Power));
+            Graphics.SetStrokeColor(myBullets[i].Type == 0 ? Color.Orange : Color.Red);
+            Graphics.DrawCircle(bullet.X, bullet.Y, 1.5 * bullet.Power);
             // Console.WriteLine("BulletId: " + i + " X: " + bullet.X + " Y: " + bullet.Y);
 
             EnemyData data = enemyData[myBullets[i].Target];
@@ -251,9 +250,8 @@ public class Woff : Bot
                 // Console.WriteLine("minGrav: " + minGrav + " Grav: " + grav + " X: " + x + " Y: " + y);
 
                 int gravColor = (int) Math.Min(255, Math.Max(0, grav * 255 / 1000));
-                Graphics.DrawEllipse(new Pen(Color.FromArgb(
-                            gravColor, 255 - gravColor, 0)), 
-                            (float) x, (float) y, 10, 10);
+                Graphics.SetStrokeColor(Color.FromRgb((uint)gravColor, (uint)(255 - gravColor), 0));
+                Graphics.DrawCircle(x, y, 5);
             }
         }
 
@@ -268,8 +266,8 @@ public class Woff : Bot
         SetForward(DistanceTo(destX, destY) * Math.Cos(turn));
 
         // Anti-Gravity color
-        TurretColor = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
-        ScanColor = Color.FromArgb(105, 105, rand.Next(256));
+        TurretColor = Color.FromRgb((uint)rand.Next(256), (uint)rand.Next(256), (uint)rand.Next(256));
+        ScanColor = Color.FromRgb(105, 105, (uint)rand.Next(256));
         BodyColor = ScanColor;
         BulletColor = ScanColor;
         RadarColor = Color.White;
@@ -359,7 +357,8 @@ public class Woff : Bot
                 double distance = (3 + (int)(energyDrop * 1.999999)) * 8;
                 destX = X + Math.Cos(direction) * distance;
                 destY = Y + Math.Sin(direction) * distance;
-                Graphics.DrawRectangle(new Pen(Color.Blue), (float)destX, (float)destY, 20, 20);
+                Graphics.SetStrokeColor(Color.Blue);
+                Graphics.DrawRectangle(destX, destY, 20, 20);
                 
                 if (destX < MOVE_WALL_MARGIN || destX > ArenaWidth - MOVE_WALL_MARGIN ||
                     destY < MOVE_WALL_MARGIN || destY > ArenaHeight - MOVE_WALL_MARGIN)
@@ -490,7 +489,8 @@ public class Woff : Bot
             angleScores[(int)(((GunBearingTo(predictedX, predictedY) * ANGLE_BINS / 360) + ANGLE_BINS) % ANGLE_BINS)] += weight;
             // Console.WriteLine("Angle: " + (int)(((GunBearingTo(predictedX, predictedY) * ANGLE_BINS / 360) + ANGLE_BINS) % ANGLE_BINS) + " Weight: " + weight);
 
-            Graphics.DrawEllipse(new Pen(Color.Blue), (float)predictedX, (float)predictedY, 20, 20);
+            Graphics.SetStrokeColor(Color.Blue);
+            Graphics.DrawCircle(predictedX, predictedY, 10);
         }
 
         double bestAngle = 0;
